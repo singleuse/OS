@@ -1,0 +1,780 @@
+1.fcfs
+
+
+#include<stdio.h>
+void main()
+{
+int n,wt[10],bt[10],tt[10],i,j,wl=0,tl=0;
+float aw,at;
+printf ("enter no of processes:");
+scanf ("%d",&n) ;
+printf("enter the burst time off processes:");
+for (i=0;i<n;i++)
+scanf("%d",&bt[i]);
+for(i=0;i<n;i++)
+{
+wt[0]=0;
+tt[0]=bt[0];
+wt[i+1]=bt[i]+wt[i];
+tt[i+1]=tt[i]+bt[i+1];
+wl=wl+wt[i];
+tl=tl+tt[i];
+}
+aw=wl/n;
+at=tl/n;
+printf("\nbt\twt\ttt\n");
+for(i=0;i<n;i++)
+printf("%d\t%d\t%d\n",bt[i],wt[i],tt[i]);
+printf ("aw=%f\nat=%f\n",aw,at);
+}
+
+
+2.//Sjf
+#include<stdio.h>
+void main()
+{
+int i,j,pbt[10],pwt[10],ptt[10],t,n,wl=0,tl=0;
+float aw,at;
+printf("enter no of processes:");
+scanf("%d",&n) ;
+printf("enter the burst time of processes:");
+for(i=0;i<n;i++)
+scanf("%d",&pbt[i]);
+for(i=0;i<n;i++)
+{
+for(j=0;j<n;j++)
+{
+if(pbt[i]<pbt[j])
+{
+t=pbt[i];
+pbt[i]=pbt[j];
+pbt[j]=t;
+}}}
+for(i=0;i<n;i++)
+printf("%d",pbt[i]);
+for(i=0;i<n;i++)
+{
+pwt[0]=0;
+ptt[0]=pbt[0];
+pwt[i+1]=pbt[i]+pwt[i];
+ptt[i+1]=ptt[i]+pbt[i+1];
+wl=wl+pwt[i];
+tl=tl+ptt[i];
+}
+aw=wl/n;
+at=tl/n;
+printf("\npbt\tpwt\tptt\n");
+for(i=0;i<n;i++)
+printf("%d\t%d\t%d\n",pbt[i],pwt[i],ptt[i]);
+printf("aw=%f\t%f\n",aw,at);
+}
+
+
+3.//roundrobin
+
+#include<stdio.h>
+void main()
+{
+int st[10],bt[10],wt[10],tat[10],n,tq;
+int i,j,count=0,swt=0,stat=0,temp,sq=0;
+float awt=0.0,atat=0.0;
+printf("enter no of processes:");
+scanf ( "%d",&n) ;
+printf("enter burst time for sequences:");
+for(i=0;i<n;i++)
+{
+scanf("%d",&bt[i]);
+st[i]=bt[i];
+}
+printf("enter time quantam:");
+scanf("%d",&tq) ;
+while(1)
+{
+for (i=0,count=0;i<n;i++)
+{
+temp=tq;
+if(st[i]==0)
+{
+count++;
+continue;
+}
+if(st[i]>tq)
+st[i]=st[i]-tq;
+else
+if(st[j]>=0)
+{
+temp=st[i];
+st[i]=0;
+}
+sq=sq+temp;
+tat[i]=sq;
+}
+if(n==count)
+break;
+}
+for(i=0;i<n;i++)
+{
+wt[i]=tat[i]-bt[i];
+swt=swt+wt[i];
+stat=stat+tat[i];
+}
+awt=(float)swt/n;
+atat=(float)stat/n;
+printf("process-no bursttime waitingtime aroundtime:");
+for (i=0;i<n;i++)
+printf("\n%d\t%d\t%d\t%d",i+1,bt[i],wt[i],tat[i]);
+printf("\n avg waiting time=%f\navg turnaround time=%f",awt,atat);
+}
+
+
+//priority
+#include<stdio.h>
+void main()
+{
+int i,j,pno[10],prior[10],bt[10],n,wt[10],tt[10],wl=0,tl=0,s;
+float aw,at;
+printf("enter the no of processes:");
+scanf("%d",&n) ;
+for(i=0;i<n;i++)
+{
+printf("the process%d:\n",i+1);
+printf ("enter the burst time of process:");
+scanf("%d",&bt[i]);
+printf("enter the priority of process:");
+scanf("%d",&prior[i]);
+pno[i]=i+1;
+}
+for(i=0;i<n;i++)
+{
+for(j=0;j<n;j++)
+{
+if(prior[i]<prior[j])
+{
+s=prior[i];
+prior[i]=prior[j];
+prior[j]=s;
+s=pno[i];
+pno[i]=pno[j];
+pno[j]=s;
+}}}
+for(i=0;i<n;i++)
+{
+wt[0]=0;
+tt[0]=bt[0];
+wt[i+1]=bt[i]+wt[i];
+tt[i+1]=tt[i]+bt[i+1];
+wl=wl+wt[i];
+tl=tl+tt[i];
+aw=wl/n;
+at=tl/n;
+}
+printf("\njob\tbt\twt\tat\tprior\n");
+for(i=0;i<n;i++)
+printf("%d\t%d\t%d\r%d\t%d\n",pno[i],bt[i],wt[i],tt[i],prior[i]);
+printf("aw=%f\nat=%f\n",aw,at);
+}
+
+//System calls
+//2A)
+
+#include<sys/types.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<stdio.h>
+#include<fcntl.h>
+int main(int argc,char *argv[])
+{
+int i,fd1,fd2;
+char *file1,*file2,buf[2];
+file1=argv[1];
+file2=argv[2];
+printf("file1=%s file2=%s",file1,file2);
+fd1=open(file1,O_RDONLY,0777);
+fd2=creat(file2,0777);
+while(i=read(fd1,buf,1)>0)
+write(fd2,buf,1) ;
+remove(file1) ;
+close(fd1);
+close(fd2);
+}
+
+// ./a.out pat.c pattern1.c
+
+//2B Lseek
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+int fd;
+long position;
+fd = open("datafile.dat");
+if(fd!=-1)
+{
+position=lseek(fd,0L,2);
+if(position!=-1)
+printf("the length of datafile.dat is %ld bytes./n",position);
+else
+perror("lseek error");
+}
+else
+printf("Cannot open datafile.dat\n");
+close(fd);
+}
+
+//./a.out datafile.dat
+
+
+//2C
+
+#include<stdio.h>
+#include<dirent.h>
+int main()
+{
+DIR *folder;
+struct dirent *entry;
+int files=0;
+folder = opendir("directory") ;
+if(folder==NULL)
+{
+perror("Unable to read directory");
+return(1) ;
+}
+while( (entry=readdir(folder) ) )
+{
+files++;
+printf( "File %3d: %s\n",files,entry->d_name ) ;
+}
+closedir (folder ) ;
+return 0;
+}
+
+//./a.out directory.c
+
+
+
+
+//3)Deadlock
+#include<stdio.h>
+struct da{
+int max[10],a1[10],need[10],before[10],after[10];
+}p[10];
+
+void main()
+{
+int i,j,k,l,r,n,tot[10],av[10],cn=0,cz=0,temp=0,c=0;
+printf("\n Enter the no. of processes:");
+scanf("%d",&n);
+printf("\n Enter The number of resources :");
+scanf("%d",&r);
+for(i=0;i<n;i++)
+{
+printf("Process %d\n",i+1);
+for(j=0;j<r;j++)
+{
+printf("maximum value for resources %d",j+1);
+scanf("%d",&p[i].max[j]);
+}
+for(j=0;j<r;j++)
+{
+printf("allocated from resource %d:",j+1);
+scanf("%d",&p[i].a1[j]);
+p[i].need[j]=p[i].max[j]-p[i].a1[i];
+}
+}
+for(i=0;i<r;i++)
+{
+for(j=0;j<n;j++)
+temp=temp+p[j].a1[i];
+av[i]=tot[i]-temp;
+temp=0;
+}
+printf("\n\t Resouces allocated needed total Availiable");
+for(i=0;i<n;i++)
+{
+printf("\n p %d\t",i+1);
+for(j=0;j<r;j++)
+printf("%d",p[i].max[j]);
+printf("\t");
+for(j=0;j<r;j++)
+printf("%d",p[i].a1[j]);
+printf("\t");
+for(j=0;j<r;j++);
+printf("%d",p[i].need[j]);
+printf("\t");
+for(j=0;j<r;j++)
+{
+if(i==0)
+printf("%d",tot[j]);
+}
+printf(" ");
+for(j=0;j<r;j++)
+{
+if(i==0)
+printf("%d",av[j]);
+} 
+}
+printf("\n\n\t Avail Before\t Avail After");
+for(l=0;l<n;l++)
+{
+for(i=0;i<n;i++)
+{
+for(j=0;j<r;j++)
+{
+if(p[i].need[j]>av[j])
+cn++;
+if(p[i].max[j]==0)
+cz++;
+}
+if(n==0 && cz!=r)
+{
+for(j=0;j<r;j++)
+{
+p[i].before[j]=av[j]-p[i].need[j];
+p[i].after[j]=p[i].before[j]+p[i].max[j];
+av[j]=p[i].after[j];
+p[i].max[j]=0;
+}
+printf("\nP%d\t",i+1);
+for(j=0;j<r;j++)
+printf("%d",p[i].before[j]);
+printf("\t");
+for(j=0;j<r;j++)
+printf("%d",p[i].after[j]);
+cn=0;
+cz=0;
+c++;
+break;
+}
+else
+{
+cn=0;cz=0;
+}
+}
+}
+if(c==n)
+printf("\n The above sequence is a safe sequence");
+else
+printf("\n Deadlock Occured");
+}
+
+
+
+
+
+
+
+
+
+
+
+//4)Producer Consumer
+#include<stdio.h>
+int main()
+{int buffer[10],bufsize=10,in=0,out=0,produce,consume,choice=0;
+while(choice!=3)
+{
+printf("\n1.produce\t2.consume\t3.Exit");
+printf("\nenter your choice:");
+scanf("%d",&choice);
+switch(choice)
+{
+case 1:
+if((in+1)%bufsize==out)
+printf("\nBuffer is full");
+else
+{
+printf("\nEnter the value:");
+scanf("%d",&produce);
+buffer[in]=produce;
+in=(in+1)%bufsize;
+}
+break;
+
+case 2:
+if(in==out)
+printf("\nBuffer is empty");
+else
+{
+consume=buffer[out];
+printf("\n the consumed value is %d",consume);
+out=(out+1)%bufsize;
+}
+break;
+}
+}
+return 0;
+}
+
+
+//5. Write C programs to illustrate the following IPC mechanisms
+//5a)Pipes 
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/types.h>
+//#include<sys/wait.h>
+int main(int argc, char *argv[])
+{
+int fd[2],pid,k;
+k=pipe(fd);
+if(k==-1)
+{
+perror("pipe");
+exit(1);
+}
+pid=fork();
+if(pid==0)
+{
+close(fd[0]);
+dup2(fd[1],1);
+close(fd[1]);
+execlp(argv[1],argv[1],NULL);
+perror("execl");
+}
+else
+{
+wait(2);
+close(fd[1]);
+dup2(fd[0],0);
+close(fd[0]);
+execlp(argv[2],argv[2],NULL);
+perror("execl");
+}
+}
+
+//./a.out ls sort
+
+
+//b) FIFOs
+#include<stdio.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<unistd.h>
+int main()
+{
+int pfds[2];
+char buf[30];
+if(pipe(pfds)==-1)
+{
+perror("pipe");
+exit(1);
+}
+printf("Writing to file descriptor # %d\n",pfds[1]);
+write(pfds[1],"test",5);
+printf("reading from file descriptor # %d\n",pfds[0]);
+read(pfds[0],buf,5);
+printf("read\"%s\"\n",buf);
+}
+
+//Writing to file descriptor # 4
+//reading from file descriptor # 3
+//read"test"
+
+
+//c)Message Queues 
+#include <sys/types.h>    
+#include <sys/ipc.h> 
+#include <sys/msg.h> 
+#include <stdio.h> 
+#include <stdlib.h>
+#define MSGSZ 128   
+
+typedef struct msgbuf { 
+    long    mtype; 
+    char    mtext[MSGSZ]; 
+} message_buf;  
+void main() 
+{ 
+    int msqid; 
+    key_t key; 
+    message_buf  rbuf;  
+    key = 1234; 
+    if ((msqid = msgget(key, 0666)) < 0) { 
+        perror("msgget"); 
+        exit(1); 
+    }  
+    if (msgrcv(msqid, &rbuf, MSGSZ, 1, 0) < 0) { 
+        perror("msgrcv");  
+        exit(1);  
+   } 
+    printf("%s\n", rbuf.mtext); 
+    exit(0); 
+}
+
+//message sent:hello
+
+//d) Shared Memory
+
+#include<stdio.h>
+#include<string.h>
+#include<sys/shm.h>
+#include<sys/ipc.h>
+int main()
+{
+key_t key=ftok("shmfile",65);
+int shmid=shmget(key,1024,0666|IPC_CREAT);
+char *str=(char*) shmat(shmid,(void*)0,0);
+printf("Write Data: ");
+gets(str);
+printf("Data Written in memory : %s\n",str);
+return 0;
+}
+
+//Write Data: hi
+//Data Written in memory : hi
+
+///6. Write C programs to simulate the following memory management techniques
+//a) Paging
+
+#include<stdio.h>
+void main()
+{
+ int ms, ps, nop, np, rempages, i, j, x, y, pa, offset;
+ int s[10], fno[10][20];
+printf("\nEnter the memory size -- ");
+scanf("%d",&ms);
+printf("\nEnter the page size -- ");
+scanf("%d",&ps);
+nop = ms/ps;
+printf("\nThe no. of pages available in memory are -- %d ",nop);
+printf("\nEnter number of processes -- ");
+scanf("%d",&np);
+rempages = nop;
+for(i=1;i<=np;i++)
+{
+printf("\nEnter no. of pages required for p[%d]-- ",i);
+ scanf("%d",&s[i]);
+if(s[i] >rempages)
+{
+printf("\nMemory is Full");
+break;
+}
+rempages = rempages - s[i];
+printf("\nEnter pagetable for p[%d] --- ",i);
+for(j=0;j<s[i];j++)
+scanf("%d",&fno[i][j]);
+}
+printf("\nEnter Logical Address to find Physical Address ");
+printf("\nEnter process no. and pagenumber and offset -- ");
+scanf("%d %d %d",&x,&y, &offset);
+if(x>np || y>=s[i] || offset>=ps)
+printf("\nInvalid Process or Page Number or offset");
+else
+{
+ pa=fno[x][y]*ps+offset;
+printf("\nThe Physical Address is -- %d",pa);
+}
+}
+
+
+//Enter the memory size -- 100
+
+Enter the page size -- 100
+
+The no. of pages available in memory are -- 1
+Enter number of processes -- 10
+
+Enter no. of pages required for p[1]-- 2
+
+Memory is Full
+Enter Logical Address to find Physical Address
+Enter process no. and pagenumber and offset -- 3
+3
+3
+
+Invalid Process or Page Number or offsetl1gauravmandal@cloudshell:~$ ./a.out
+
+Enter the memory size -- 1000
+
+Enter the page size -- 100
+
+The no. of pages available in memory are -- 10
+Enter number of processes -- 10
+
+Enter no. of pages required for p[1]-- 3
+
+Enter pagetable for p[1] --- 54
+8695
+5
+
+Enter no. of pages required for p[2]-- 5
+
+Enter pagetable for p[2] --- 14573
+2
+2
+2
+
+2
+
+Enter no. of pages required for p[3]-- 5
+
+Memory is Full
+Enter Logical Address to find Physical Address
+Enter process no. and pagenumber and offset -- 2360
+2360
+2360
+
+Invalid Process or Page Number or offset
+
+
+ b) Segmentation
+
+
+#include<stdio.h>
+#include<stdlib.h>
+
+struct list
+{
+int seg;
+int base;
+int limit;
+struct list *next;
+}*p;
+void insert(struct list *q,int base,int limit,int seg)
+{
+if(p==NULL)
+{
+p=malloc(sizeof(struct list));
+p->limit=limit;
+p->base=base;
+p->seg=seg;
+p->next=NULL;
+}
+else
+{
+while(q->next!=NULL)
+{
+q=q->next;
+printf("Yes\n");
+}
+q->next=malloc(sizeof(struct list));
+q->next->limit=limit;
+q->next->base=base;
+q->next->seg=seg;
+q->next->next=NULL;
+}
+}
+int find(struct list *q,int seg)
+{
+while(q->seg!=seg)
+{
+q=q->next;
+}
+return q->limit;
+}
+int search(struct list *q,int seg)
+{
+while(q->seg!=seg)
+{
+q=q->next;
+}
+return q->base;
+}
+
+void main()
+{
+p=NULL;
+int seg,offset,limit,base,c,s,physical;
+printf("Enter segment table\n");
+printf("Enter -1 as segment value for termination\n");
+do
+{
+printf("Enter Segment Number");
+scanf("%d",&seg);
+if(seg!=-1)
+{
+printf("Enter base value");
+scanf("%d",&base);
+printf("Enter value of limit:");
+scanf("%d",&limit);
+insert(p,base,limit,seg);
+}
+}while(seg!=-1);
+printf("Enter offset:");
+scanf("%d",&offset);
+printf(" Enter b segmentation number:");
+scanf("%d:",&seg);
+c=find(p,seg);
+s=search(p,seg);
+if(offset<c)
+{
+physical=s+offset;
+printf("Address in Physical memory %d\n",physical);
+}
+else
+{
+printf("error");
+}
+}
+
+
+int seg,offset,limit,base,e,s,physical;
+printf("Enter segment table\n");
+printf("Enter -1 as segment value for termination\n");
+do
+{
+printf("Enter Segment Number");
+scanf("%d",&seg);
+if(seg!=-1)
+{
+printf("Enter base value");
+scanf("%d",&base);
+printf("Enter value of limit:");
+scanf("%d",&limit);
+insert(p,base,limit,seg);
+}
+}while(seg!=-1);
+printf("Enter offset:");
+scanf("%d",&offset);
+printf(" Enter b segmentation number:");
+scanf("%d:,&seg);
+c=finf(p,seg);
+s=search(p,seg);
+if(offset<0)
+{
+physical=s+offset;
+printf("Address in Physical memory %d\n",physical);
+}
+else
+{
+printf("error");
+}
+}
+
+
+Enter segment table
+Enter -1 as segment value for termination
+Enter Segment Number3
+Enter base value1
+Enter value of limit:3
+Enter Segment Number3
+Enter base value4
+Enter value of limit:3
+Enter Segment Number2
+Enter base value4
+Enter value of limit:2
+Yes
+Enter Segment Number3
+Enter base value42
+Enter value of limit:14
+Yes
+Yes
+Enter Segment Number3
+Enter base value23
+Enter value of limit:2
+Yes
+Yes
+Yes
+Enter Segment Number32
+Enter base value-1
+Enter value of limit:-1
+Yes
+Yes
+Yes
+Yes
+Enter Segment Number-1
+Enter offset:1
+ Enter b segmentation number:2
+Address in Physical memory 5
+
+
